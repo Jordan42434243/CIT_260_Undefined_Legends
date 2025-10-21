@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>CSN Exam Registration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="../static/styles.css" rel="stylesheet">
+</head>
+
+<body>
+  <header class="header">
+    <div class="header__inner">
+      <div><strong>CSN Exam Registration</strong></div>
+      <nav class="header__nav">
+        <a href="login">Sign in</a>
+        <a href="create-account">Create account</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main grid grid--2">
+    <section class="card">
+      <h2 class="card__title">Register for Proctored Exams</h2>
+      <p>Book a seat for upcoming exam sessions. Seats are limited to 20 per session.</p>
+      <ul class="list">
+        <li>Authenticate using your <strong>CSN student email</strong> (NSHE#@student.csn.edu).</li>
+        <li>No duplicate bookings per exam; up to <strong>3 different exams</strong> per student.</li>
+        <li>Cancel anytime before the session start to free your seat.</li>
+      </ul>
+      <p><a class="button" href="login">Sign in to begin</a></p>
+    </section>
+
+    <section class="card">
+      <h2 class="card__title">For Faculty</h2>
+      <p>View rosters and seat counts by exam/session.</p>
+      <p><a class="button button--ghost" href="login">Faculty Sign in</a></p>
+    </section>
+
+    <section class="card">
+      <h3 class="card__title">How it works</h3>
+      <ol>
+        <li>Sign in with CSN email & NSHE number.</li>
+        <li>Select exam and a session with seats left.</li>
+        <li>Receive a confirmation; view/cancel in “My Reservations.”</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h3 class="card__title">Upcoming Sessions (sample)</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Exam</th>
+            <th>Date/Time</th>
+            <th>Seats</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Math 120 Midterm</td>
+            <td>Oct 10, 9:00–11:00</td>
+            <td><span class="status status--ok">12 left</span></td>
+          </tr>
+          <tr>
+            <td>English 101 Final</td>
+            <td>Oct 12, 10:00–12:00</td>
+            <td><span class="status status--full">Full</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="footer">© CSN Testing Center</footer>
+</body>
+
+</html>
+
+
+
+<!-- 
+Updates:
+
+- Fixed formatting using two //'s and now uses single /'s
+-->
