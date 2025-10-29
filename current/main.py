@@ -26,18 +26,15 @@ class User(db.Model):
 
 # Verify password matches database for login attempt
 def verify_password_login(password, user):
-    status = False
-    if password == user.password:
-        status = True
-    return status
+    return password == user.password
+      
 
 # Verify password meets requirements for account creation
 def verify_password_create(password, email):
-    valid = True
     nshe = email[0:10]
-    if password != nshe:
-        valid = False
-    return valid
+    return password == nshe
+        
+    
 
 
 # ---------- Routes ---------- #
