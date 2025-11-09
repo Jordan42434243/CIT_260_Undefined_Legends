@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Register for Exams • CSN Exam Registration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+  <header class="header">
+    <div class="header__inner">
+      <div><strong>Exam Registration</strong></div>
+      <nav class="header__nav">
+        <a href="{{ url_for('dashboard') }}">Home</a>
+        <a href="#make-reservation" Make a reservation</a>
+        <a href="{{ url_for('my_reservations') }}">My Reservations</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+		<span class="user-info">{{ first_name }} {{ last_name }}</span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main grid grid--2">
+    <section class="card">
+      <div class="grid">
+        <div>
+          <span class="label">Name</span>
+          <div class="help">{{ first_name }} {{ last_name }}</div>
+        </div>
+        <div>
+          <span class="label">Email</span>
+          <div class="help">{{ email }}</div>
+        </div>
+        <div>
+          <span class="label">Role</span>
+          <div class="help">{{ role }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Make a Reservation -->
+    <section id="make-reservation" class="card">
+      <h2 class="card__title">Make a Reservation</h2>
+
+      <form class="form" method="post" action="{{ url_for('register') }}" novalidate>
+        <!-- 0) Select Class -->
+        <div class="form__row">
+          <label class="label" for="class">Class</label>
+          <select id="class" name="class_name" class="select" required>
+            <option value="">— Select Class —</option>
+            <option value="Math">Math</option>
+            <option value="English">English</option>
+            <option value="Computer Science">Computer Science</option>
+          </select>
+        </div>
+
+        <!-- 1) Select Exam (your backend can filter based on class_name if desired) -->
+        <div class="form__row">
+          <label class="label" for="exam">Exam</label>
+          <select id="exam" name="exam_id" class="select" required>
+            <option value="">— Select Exam —</option>
+            {% for exam in available_exams %}
+              <option value="{{ exam.id }}">{{ exam.title }}</option>
+            {% endfor %}
+          </select>
+          <div class="help">You may hold up to 3 different exams.</div>
+        </div>
+
+        <!-- 2) Available Sessions -->
+        <fieldset class="form__row" role="radiogroup" aria-labelledby="sessionsLegend">
+          <legend id="sessionsLegend" class="label">Available Sessions</legend>
+          <ul class="list">
+            {% for s in available_sessions %}
+              <li>
+                <label class="{{ 'help' if s.is_full }}">
+                  <input type="radio" name="session_id" value="{{ s.id }}" {% if s.is_full %}disabled{% endif %} required>
+                  {{ s.when_human }} {% if s.is_full %}(Full){% else %}({{ s.seats_left }} seats left){% endif %}
+                </label>
+              </li>
+            {% endfor %}
+          </ul>
+        </fieldset>
+
+        <!-- Hidden student id if needed by your server -->
+        <input type="hidden" name="student_id" value="{{ student_id }}">
+
+        <button class="button" type="submit">Confirm Reservation</button>
+        <p class="help">You cannot book the same exam twice. Capacity limits apply per session.</p>
+      </form>
+    </section>
+
+
+  </main>
+
+  <footer class="footer">© CSN Testing Center</footer>
+</body>
+</html>

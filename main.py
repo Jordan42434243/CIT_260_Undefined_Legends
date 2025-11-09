@@ -37,8 +37,10 @@ def verify_password_create(password, email):
 
 # --- Index Page --- #
 @app.route("/")
-# When User visits the above url ("/" = website root)... run the following function
+# When User visits the above url ("/" = website root)... 
+# run the following function
 def index():
+
     # Retreive "index.html" from templates folder and display the page
     return render_template("index.html")
 
@@ -63,7 +65,7 @@ def dashboard():
         user = User.query.filter_by(email=session["email"]).first()
 
         # Display the user's unique dashboard
-        # Passes the user's firstname and last name to "dashboard.html"
+        # Pass the user's firstname and last name to "dashboard.html"
         if user:
             return render_template("dashboard.html",
                                      first_name = user.first_name,
@@ -73,25 +75,27 @@ def dashboard():
 ## ----- Authentication Routes ----- ##
 
 # Register
-@app.route("/register", methods=["POST"]) # Recieve data from client/website
-                                          # Example: a button/form submission
+@app.route("/register", methods=["POST"]) # Post: Recieve data from frontend
+                                          # Example: a form submission
 
 # When the user submits a post request at the above URL ("/register")...
 # run the following function.
 def register():                          
     
-
-    # store data from /register post request into local variables
+    # Store data from post request into local variables
     email = request.form["email"]
     password = request.form["nshe"]
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
     role = request.form["role"]
 
-    # Use email to search database for corresponding user
+    # Search the DB by email to see if it's in use. If a user exists with that
+    # email, assign it to the local variable user
     user = User.query.filter_by(email=email).first()
 
-    # If user already exists: refersh page and return an error message
+    # Checks the truth value of the variable user.
+    #   Returns true if it contains a valid row in the User table
+    #   Returns false if the value is "none" - user not found
     if user:
         return render_template("create-account.html", 
                                error = "Email in use! - try again")

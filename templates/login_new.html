@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sign In • CSN Exam Registration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="styles.css" rel="stylesheet">
+</head>
+<body class="page--login">
+  <header class="header">
+    <div class="header__inner">
+      <div><strong>Sign In</strong></div>
+      <nav class="header__nav">
+        <a href="/">Home</a>
+        <a href="create_account.html" style="padding:6px 10px">Create account</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+  
+    <section class="card">
+      <h2 class="card__title">Welcome back</h2>
+
+      <div class="grid grid--2" style="align-items:start">
+        <form class="form" method="post" action="{{ url_for('login') }}" novalidate>
+          <div class="form__row">
+            <label class="label">I am a</label>
+            <div>
+              <label><input type="radio" name="role" value="student" checked> Student</label>
+              &nbsp;&nbsp;
+              <label><input type="radio" name="role" value="faculty"> Faculty</label>
+            </div>
+        
+          </div>
+
+          <div class="form__row">
+            <label class="label" for="email">CSN Email</label>
+            <input id="email" name="email" class="input" type="email" required
+                   placeholder="1234567890@student.csn.edu"
+                   pattern="\\d{10}@student\\.csn\\.edu">
+            <div id="emailHelp" class="help">
+              Format: <code>NSHE##########@student.csn.edu</code>
+            </div>
+          </div>
+
+          <div class="form__row">
+            <label class="label" for="password">Password</label>
+            <input id="password" name="password" class="input" type="password" required inputmode="numeric"
+                   minlength="10" maxlength="64">
+            <div id="passHelp" class="help">Students: your 10-digit NSHE by default. Faculty: your set password.</div>
+          </div>
+
+          {% if error %}
+            <div class="form__row">
+              <div class="label error">{{ error }}</div>
+            </div>
+          {% endif %}
+
+          <button class="button" type="submit">Sign in</button>
+        </form>
+
+       
+    </section>
+  </main>
+
+  <footer class="footer">© CSN Testing Center</footer>
+
+  <script>
+    // Toggle email pattern & help text based on role
+    (function(){
+      const roleRadios = document.querySelectorAll('input[name="role"]');
+      const email = document.getElementById('email');
+      const emailHelp = document.getElementById('emailHelp');
+
+      function applyRole(role){
+        if (role === 'student') {
+          email.placeholder = '1234567890@student.csn.edu';
+          email.pattern = '\\\\d{10}@student\\\\.csn\\\\.edu';
+          emailHelp.innerHTML = 'Format: <code>NSHE##########@student.csn.edu</code>';
+        } else {
+          email.placeholder = 'firstname.lastname@csn.edu';
+          email.pattern = '^[A-Za-z][A-Za-z.\\-]*@csn\\.edu$';
+          emailHelp.textContent = 'Format: firstname.lastname@csn.edu';
+        }
+      }
+
+      roleRadios.forEach(r => r.addEventListener('change', e => applyRole(e.target.value)));
+      applyRole(document.querySelector('input[name="role"]:checked').value);
+    })();
+  </script>
+</body>
+</html>

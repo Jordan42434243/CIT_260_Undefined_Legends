@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Create Account • CSN Exam Registration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="styles.css" rel="stylesheet">
+</head>
+
+<body class="page--create">
+  <header class="header header--alt">
+    <div class="header__inner">
+      <div><strong>Create Account</strong></div>
+      <nav class="header__nav">
+        <a href="/">Home</a>
+        <a href="login.html">Sign in</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="card">
+      <h2 class="card__title">Let’s get you set up</h2>
+      <p class="help" style="margin-top:-6px">Already have an account? <a href="login.html">Sign in here</a>.</p>
+
+      <form class="form" method="post" action="{{ url_for('register') }}" novalidate>
+        <div class="form__row">
+          <label class="label">I am a</label>
+          <div>
+            <label><input type="radio" name="role" value="student" checked> Student</label>
+            &nbsp;&nbsp;
+            <label><input type="radio" name="role" value="faculty"> Faculty</label>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <label class="label" for="email">CSN Email</label>
+          <input id="email" name="email" class="input" type="email" required
+                 placeholder="1234567890@student.csn.edu"
+                 pattern="\\d{10}@student\\.csn\\.edu">
+          <div id="emailHelp" class="help">
+            Format: <code>NSHE##########@student.csn.edu</code>
+          </div>
+          {% if error %}<label class="label error">{{ error }}</label>{% endif %}
+        </div>
+
+        <div class="form__row" id="passwordRow">
+          <label class="label" for="nshe">Password (Students: NSHE Number)</label>
+          <input id="nshe" name="nshe" class="input" type="password" required inputmode="numeric"
+                 minlength="10" maxlength="10" pattern="\\d{10}">
+          <div id="passHelp" class="help">Exactly 10 digits for students. Faculty can set a secure password.</div>
+        </div>
+
+        <div class="form__row">
+          <label class="label" for="first">First name</label>
+          <input id="first" name="first_name" class="input" type="text" required>
+        </div>
+
+        <div class="form__row">
+          <label class="label" for="last">Last name</label>
+          <input id="last" name="last_name" class="input" type="text" required>
+        </div>
+
+        <button class="button" type="submit" value="Register">Create Account</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">© CSN Testing Center</footer>
+
+  <script>
+    // Make the page feel different and enforce different email/password rules by role
+    (function(){
+      const roleRadios = document.querySelectorAll('input[name="role"]');
+      const email = document.getElementById('email');
+      const emailHelp = document.getElementById('emailHelp');
+      const pass = document.getElementById('nshe');
+      const passHelp = document.getElementById('passHelp');
+
+      function applyRole(role){
+        if (role === 'student') {
+          email.placeholder = '1234567890@student.csn.edu';
+          email.pattern = '\\\\d{10}@student\\\\.csn\\\\.edu';
+          emailHelp.innerHTML = 'Format: <code>NSHE##########@student.csn.edu</code>';
+
+          pass.type = 'password';
+          pass.inputMode = 'numeric';
+          pass.minLength = 10;
+          pass.maxLength = 10;
+          pass.pattern = '\\\\d{10}';
+          passHelp.textContent = 'Exactly 10 digits for students.';
+        } else {
+          email.placeholder = 'firstname.lastname@csn.edu';
+          email.pattern = '^[A-Za-z][A-Za-z.\\-]*@csn\\.edu$';
+          emailHelp.textContent = 'Format: firstname.lastname@csn.edu';
+
+          pass.type = 'password';
+          pass.inputMode = 'text';
+          pass.minLength = 8;
+          pass.maxLength = 64;
+          pass.removeAttribute('pattern');
+          passHelp.textContent = 'Use at least 8 characters (letters, numbers, symbols).';
+        }
+      }
+
+      roleRadios.forEach(r => r.addEventListener('change', e => applyRole(e.target.value)));
+      applyRole(document.querySelector('input[name="role"]:checked').value);
+    })();
+  </script>
+</body>
+</html>
