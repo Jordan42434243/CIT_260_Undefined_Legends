@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Faculty Reports • CSN Exam Registration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="styles.css" if false else 'styles.css' }}" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="header__inner">
+      <div><strong>Faculty Reports</strong></div>
+      <nav class="header__nav">
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </nav>
+      <!-- Show who is signed in (faculty) -->
+      <div class="user-info">{{ faculty_first_name }} {{ faculty_last_name }}</div>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Search & Filters -->
+    <section class="card">
+      <h2 class="card__title">Find a Student</h2>
+      <form class="form grid grid--3" method="get" action="{{ url_for('faculty_reports') }}" id="searchForm" novalidate>
+        <!-- Name -->
+        <div class="form__row">
+          <label class="label" for="student_name">Student Name</label>
+          <input class="input" id="student_name" name="student_name"
+                 value="{{ request.args.get('student_name','') }}"
+                 placeholder="e.g., Jane Doe">
+          <div class="help">Partial names are OK.</div>
+        </div>
+
+        <!-- NSHE -->
+        <div class="form__row">
+          <label class="label" for="nshe">NSHE Number</label>
+          <input class="input" id="nshe" name="nshe"
+                 inputmode="numeric" pattern="\\d{10}"
+                 value="{{ request.args.get('nshe','') }}"
+                 placeholder="10 digits">
+          <div class="help">Exactly 10 digits.</div>
+        </div>
+
+        <!-- Status -->
+        <div class="form__row">
+          <label class="label" for="status">Status</label>
+          <select id="status" name="status" class="select">
+            <option value="" {% if not request.args.get('status') %}selected{% endif %}>Any</option>
+            <option value="registered" {% if request.args.get('status')=='registered' %}selected{% endif %}>Registered (upcoming)</option>
+            <option value="taken"      {% if request.args.get('status')=='taken' %}selected{% endif %}>Taken (completed)</option>
+            <option value="cancelled"  {% if request.args.get('status')=='cancelled' %}selected{% endif %}>Cancelled</option>
+          </select>
+        </div>
+
+        <div class="form__row" style="grid-column:1/-1">
+          <button class="button" type="submit">Search</button>
+          <a class="button button--ghost" href="{{ url_for('faculty_reports') }}" style="margin-left:8px">Reset</a>
+
+          <!-- Optional CSV export -->
+          <button class="button button--ghost" name="export" value="csv" style="margin-left:8px">Export CSV</button>
+          <div class="help" style="margin-top:8px">Search requires at least one of Name or NSHE.</div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Results -->
+    <section class="card">
+      <h3 class="card__title">Results</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>NSHE</th>
+            <th>Subject</th>
+            <th>Exam</th>
+            <th>Status</th>
+            <th>Location</th>
+            <th>Room</th>
+            <th>Proctor</th>
+            <th>Date / Time</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if results and results|length > 0 %}
+            {% for r in results %}
+              <tr>
+                <td>{{ r.student_name }}</td>
+                <td>{{ r.nshe }}</td>
+                <td>{{ r.class_name }}</td>
+                <td>{{ r.exam_title }}</td>
+                <td>
+                  {% if r.status == 'taken' %}
+                    <span class="status status--ok">Taken</span>
+                  {% elif r.status == 'registered' %}
+                    <span class="status status--warn">Registered</span>
+                  {% elif r.status == 'cancelled' %}
+                    <span class="status">Cancelled</span>
+                  {% else %}
+                    <span class="status">{{ r.status|default('—') }}</span>
+                  {% endif %}
+                </td>
+                <td>{{ r.location }}</td>
+                <td>{{ r.room }}</td>
+                <td>{{ r.proctor_name }}</td>
+                <td>{{ r.when_human }}</td>
+                <td>{{ r.score if r.status == 'taken' else '—' }}</td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="10" class="help">No results. Adjust your search above.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      {% if page_count and page_count > 1 %}
+        <div class="pagination" style="margin-top:12px">
+          {% for p in range(1, page_count+1) %}
+            {% if p == page %}
+              <span class="button" style="pointer-events:none">{{ p }}</span>
+            {% else %}
+              <a class="button button--ghost" href="{{ url_for('faculty_reports', **request.args.to_dict(), page=p) }}">{{ p }}</a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer class="footer">© CSN Testing Center</footer>
+
+  <script>
+    // Require at least one of name or NSHE before submitting
+    (function(){
+      const form = document.getElementById('searchForm');
+      form.addEventListener('submit', function(e){
+        const name = (document.getElementById('student_name').value || '').trim();
+        const nshe = (document.getElementById('nshe').value || '').trim();
+        if (!name && !nshe) {
+          e.preventDefault();
+          alert('Please enter a Student Name and/or NSHE number to search.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
