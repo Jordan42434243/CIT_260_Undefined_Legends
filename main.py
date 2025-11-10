@@ -105,12 +105,12 @@ def register():
     #   Returns true if it contains a valid row in the User table
     #   Returns false if the value is "none" - user not found
     if user:
-        return render_template("create-account.html", 
+        return render_template("create_account.html", 
                                error = "Email in use! - try again")
     
     # If password is invaid refresh page and return an error message
     elif not verify_password_create(password, email):
-        return render_template("create-account.html", 
+        return render_template("create_account.html", 
                 error = "Password must match #nshe used in email - try again")
     
     # User doesn't already exist and password is valid... add user to DB
