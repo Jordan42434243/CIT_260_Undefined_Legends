@@ -74,6 +74,7 @@ def dashboard():
 @app.route("/my_reservations")
 def my_reservations():
     return render_template("my_reservations.html")
+    
 ## ----- Authentication Routes ----- ##
 
 # Register
