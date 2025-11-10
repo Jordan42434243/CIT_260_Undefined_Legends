@@ -70,7 +70,7 @@ def dashboard():
             return render_template("dashboard.html",
                                      first_name = user.first_name,
                                      last_name  = user.last_name,)
-                                                     
+# --- My Reservation Page --- #                                            
 @app.route("/my_reservations")
 def my_reservations():
     return render_template("my_reservations.html")
