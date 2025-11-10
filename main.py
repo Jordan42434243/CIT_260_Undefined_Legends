@@ -54,6 +54,11 @@ def create_account():
 def login_page():
     return render_template("login.html")
 
+# --- Login Faculty Page --- #
+@app.route("/login_faculty")
+def login_faculty():
+    return render_template("login_faculty.html")
+
 # --- Dashboard Page --- #
 @app.route("/dashboard")
 def dashboard():
