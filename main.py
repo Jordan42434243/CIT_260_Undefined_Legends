@@ -45,9 +45,9 @@ def index():
     return render_template("index.html")
 
 # --- Create Account Page --- #
-@app.route("/create-account")
+@app.route("/create_account")
 def create_account():
-    return render_template("create-account.html")
+    return render_template("create_account.html")
 
 # --- Login Page --- #
 @app.route("/login")
@@ -71,7 +71,9 @@ def dashboard():
                                      first_name = user.first_name,
                                      last_name  = user.last_name,)
                                                      
-    
+@app.route("/my_reservations")
+def my_reservations():
+    return render_template("my_reservations.html")
 ## ----- Authentication Routes ----- ##
 
 # Register

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>Create Account • CSN Exam Registration</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="styles.css" rel="stylesheet">
+  <link href="../static/styles.css" rel="stylesheet">
 </head>
 
 <body class="page--create">
@@ -13,7 +13,7 @@
       <div><strong>Create Account</strong></div>
       <nav class="header__nav">
         <a href="/">Home</a>
-        <a href="login.html">Sign in</a>
+        <a href="login">Sign in</a>
       </nav>
     </div>
   </header>
@@ -21,7 +21,7 @@
   <main class="main">
     <section class="card">
       <h2 class="card__title">Let’s get you set up</h2>
-      <p class="help" style="margin-top:-6px">Already have an account? <a href="login.html">Sign in here</a>.</p>
+      <p class="help" style="margin-top:-6px">Already have an account? <a href="login">Sign in here</a>.</p>
 
       <form class="form" method="post" action="{{ url_for('register') }}" novalidate>
         <div class="form__row">
