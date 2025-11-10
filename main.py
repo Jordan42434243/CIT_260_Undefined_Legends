@@ -27,9 +27,15 @@ def verify_password_login(password, user):
     return password == user.password
       
 # Verify password meets requirements for account creation
-def verify_password_create(password, email):
-    nshe = email[0:10]
-    return password == nshe
+def verify_password_create(password, email, role):
+    status = False
+    if role == "student":
+        nshe = email[0:10]
+        status = (password == nshe)
+    elif role == "faculty":
+        status = len(password) >= 8
+
+    return status
         
 ### ---------- Routes ---------- ###
 
@@ -48,6 +54,11 @@ def index():
 @app.route("/create_account")
 def create_account():
     return render_template("create_account.html")
+
+# --- Create Account Faculty Page --- #
+@app.route("/create_account_faculty")
+def create_account_faculty():
+    return render_template("create_account_faculty.html")
 
 # --- Login Page --- #
 @app.route("/login")
@@ -106,12 +117,16 @@ def register():
     #   Returns false if the value is "none" - user not found
     if user:
         return render_template("create_account.html", 
-                               error = "Email in use! - try again")
+                               error = "Email in use - try again")
     
-    # If password is invaid refresh page and return an error message
-    elif not verify_password_create(password, email):
-        return render_template("create_account.html", 
-                error = "Password must match #nshe used in email - try again")
+    # If password is invalid refresh page and return an error message
+    elif not verify_password_create(password, email, role):
+        if (role == "student"):
+            return render_template("create_account.html", 
+                    error = "Invalid password")
+        else:
+            return render_template("create_account_faculty.html", 
+                    error = "Invalid password")
     
     # User doesn't already exist and password is valid... add user to DB
     else:
