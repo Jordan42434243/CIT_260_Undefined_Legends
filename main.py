@@ -85,11 +85,22 @@ def dashboard():
         if user:
             return render_template("dashboard.html",
                                      first_name = user.first_name,
-                                     last_name  = user.last_name,)
+                                     last_name  = user.last_name)
 # --- My Reservation Page --- #                                            
 @app.route("/my_reservations")
 def my_reservations():
     return render_template("my_reservations.html")
+
+# --- dashboard_faculty --- #
+@app.route("/dashboard_faculty")
+def dashboard_faculty():
+    if "email" in session:
+        user = User.query.filter_by(email=session["email"]).first()
+        
+        if user:
+            return render_template("dashboard_faculty.html",
+                                   first_name = user.first_name,
+                                   last_name = user.last_name)
     
 ## ----- Authentication Routes ----- ##
 
@@ -151,7 +162,10 @@ def register():
 
         # Redirects the user to their unique dashboard after account creation.
         # Go to the URL which maps to the dashboard function and run it.
-        return redirect(url_for("dashboard"))
+        if (role == "student"):
+            return redirect(url_for("dashboard"))
+        else:
+            return redirect(url_for("dashboard_faculty"))
 
 # Login
 @app.route("/login", methods=["POST"])
@@ -171,7 +185,10 @@ def login():
         session["email"] = email
 
         # Send user to their unique dashboard.
-        return redirect(url_for("dashboard"))
+        if (user.role == "student"):
+            return redirect(url_for("dashboard"))
+        else:
+            return redirect(url_for("dashboard_faculty"))
     else:
         # login attempt was invalid... refresh page and display error message.
         return render_template("login.html", error = "Invalid login! - try again")

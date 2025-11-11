@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>Faculty Reports • CSN Exam Registration</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="../static/styles.css" if false else 'styles.css' }}" rel="stylesheet">
+  <link href="../static/styles.css" rel="stylesheet">
 </head>
 <body>
   <header class="header">
@@ -14,7 +14,7 @@
         <a href="{{ url_for('logout') }}">Logout</a>
       </nav>
       <!-- Show who is signed in (faculty) -->
-      <div class="user-info">{{ faculty_first_name }} {{ faculty_last_name }}</div>
+      <div class="user-info">{{ first_name }} {{ last_name }}</div>
     </div>
   </header>
 
@@ -22,7 +22,7 @@
     <!-- Search & Filters -->
     <section class="card">
       <h2 class="card__title">Find a Student</h2>
-      <form class="form grid grid--3" method="get" action="{{ url_for('faculty_reports') }}" id="searchForm" novalidate>
+      <form class="form grid grid--3" method="get" action="{{ url_for('dashboard_faculty') }}" id="searchForm" novalidate>
         <!-- Name -->
         <div class="form__row">
           <label class="label" for="student_name">Student Name</label>
@@ -46,16 +46,18 @@
         <div class="form__row">
           <label class="label" for="status">Status</label>
           <select id="status" name="status" class="select">
+          
             <option value="" {% if not request.args.get('status') %}selected{% endif %}>Any</option>
             <option value="registered" {% if request.args.get('status')=='registered' %}selected{% endif %}>Registered (upcoming)</option>
             <option value="taken"      {% if request.args.get('status')=='taken' %}selected{% endif %}>Taken (completed)</option>
             <option value="cancelled"  {% if request.args.get('status')=='cancelled' %}selected{% endif %}>Cancelled</option>
+         
           </select>
         </div>
 
         <div class="form__row" style="grid-column:1/-1">
           <button class="button" type="submit">Search</button>
-          <a class="button button--ghost" href="{{ url_for('faculty_reports') }}" style="margin-left:8px">Reset</a>
+          <a class="button button--ghost" href="{{ url_for('dashboard_faculty') }}" style="margin-left:8px">Reset</a>
 
           <!-- Optional CSV export -->
           <button class="button button--ghost" name="export" value="csv" style="margin-left:8px">Export CSV</button>
@@ -121,9 +123,11 @@
           {% for p in range(1, page_count+1) %}
             {% if p == page %}
               <span class="button" style="pointer-events:none">{{ p }}</span>
+
             {% else %}
-              <a class="button button--ghost" href="{{ url_for('faculty_reports', **request.args.to_dict(), page=p) }}">{{ p }}</a>
+              {#<a class="button button--ghost" href="{{ url_for('dashboard_faculty', **request.args.to_dict(), page=p) }}">{{ p }}</a> #}
             {% endif %}
+
           {% endfor %}
         </div>
       {% endif %}
