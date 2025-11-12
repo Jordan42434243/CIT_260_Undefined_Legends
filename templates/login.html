@@ -23,7 +23,7 @@
       <h2 class="card__title">Welcome back</h2>
 
       <div class="grid grid--2" style="align-items:start">
-        <form class="form" method="post" action="{{ url_for('login') }}" novalidate>
+        <form class="form" method="post" action="{{ url_for('login') }}">
           <div class="form__row">
             <label class="label">I am a</label>
             <div>
@@ -38,7 +38,7 @@
             <label class="label" for="email">CSN Email</label>
             <input id="email" name="email" class="input" type="email" required
                    placeholder="1234567890@student.csn.edu"
-                   pattern="\\d{10}@student\\.csn\\.edu">
+                   pattern="[0-9]{10}@student\.csn\.edu">
             <div id="emailHelp" class="help">
               Format: <code>NSHE##########@student.csn.edu</code>
             </div>
@@ -47,7 +47,7 @@
           <div class="form__row">
             <label class="label" for="password">Password</label>
             <input id="password" name="password" class="input" type="password" required inputmode="numeric"
-                   minlength="10" maxlength="64">
+                   minlength="1" maxlength="64">
             <div id="passHelp" class="help">Students: your 10-digit NSHE by default. Faculty: your set password.</div>
           </div>
 
@@ -76,7 +76,7 @@
       function applyRole(role){
         if (role === 'student') {
           email.placeholder = '1234567890@student.csn.edu';
-          email.pattern = '\\\\d{10}@student\\\\.csn\\\\.edu';
+          email.pattern = '[0-9]{10}@student\\.csn\\.edu';
           emailHelp.innerHTML = 'Format: <code>NSHE##########@student.csn.edu</code>';
         } else {
           email.placeholder = 'firstname.lastname@csn.edu';
