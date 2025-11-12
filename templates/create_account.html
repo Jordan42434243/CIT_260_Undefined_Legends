@@ -23,7 +23,7 @@
       <h2 class="card__title">Let’s get you set up</h2>
       <p class="help" style="margin-top:-6px">Already have an account? <a href="login">Sign in here</a>.</p>
 
-      <form class="form" method="post" action="{{ url_for('register') }}" novalidate>
+      <form class="form" method="post" action="{{ url_for('register') }}">
         <div class="form__row">
           <label class="label">I am a</label>
           <div>
@@ -37,7 +37,7 @@
           <label class="label" for="email">CSN Email</label>
           <input id="email" name="email" class="input" type="email" required
                  placeholder="1234567890@student.csn.edu"
-                 pattern="\\d{10}@student\\.csn\\.edu">
+                 pattern="[0-9]{10}@student\.csn\.edu">
           <div id="emailHelp" class="help">
             Format: <code>NSHE##########@student.csn.edu</code>
           </div>
@@ -80,14 +80,14 @@
       function applyRole(role){
         if (role === 'student') {
           email.placeholder = '1234567890@student.csn.edu';
-          email.pattern = '\\\\d{10}@student\\\\.csn\\\\.edu';
+          email.pattern = '[0-9]{10}@student\\.csn\\.edu';
           emailHelp.innerHTML = 'Format: <code>NSHE##########@student.csn.edu</code>';
 
           pass.type = 'password';
           pass.inputMode = 'numeric';
           pass.minLength = 10;
           pass.maxLength = 10;
-          pass.pattern = '\\\\d{10}';
+          pass.pattern = '\\d{10}';
           passHelp.textContent = 'Exactly 10 digits for students.';
         } else {
           email.placeholder = 'firstname.lastname@csn.edu';
