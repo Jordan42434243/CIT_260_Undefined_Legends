@@ -7,14 +7,19 @@
   <link href="../static/styles.css" rel="stylesheet">
 </head>
 <body>
+  
   <header class="header">
     <div class="header__inner">
       <div><strong>Faculty Reports</strong></div>
       <nav class="header__nav">
+        <a href="edit_database">Edit Database</a>
         <a href="{{ url_for('logout') }}">Logout</a>
+        
+        <!-- Show who is signed in (faculty) -->
+        <span class="user-info">{{ first_name }} {{ last_name }}</span>
       </nav>
-      <!-- Show who is signed in (faculty) -->
-      <div class="user-info">{{ first_name }} {{ last_name }}</div>
+      
+      
     </div>
   </header>
 

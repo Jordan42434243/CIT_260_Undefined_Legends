@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 # Application Setup
 app = Flask(__name__)
@@ -13,12 +14,29 @@ db = SQLAlchemy(app)
 # Database Model
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, primary_key = True)
     email = db.Column(db.String(30), unique = True, nullable = False)
     password = db.Column(db.String(10), nullable = False)
     first_name = db.Column(db.String(15), nullable = False)
     last_name = db.Column(db.String(15), nullable = False)
     role = db.Column(db.String(10), nullable = False)
+
+class Exam(db.Model):
+    exam_id = db.Column(db.Integer, primary_key = True)
+    exam_name = db.Column(db.String(30), nullable = False)
+    exam_datetime = db.Column(db.DateTime, nullable = False)
+    exam_location = db.Column(db.String(30), nullable = False)
+    exam_proctor = db.Column(db.String(30), nullable = False)
+    exam_capacity = db.Column(db.Integer, nullable = False, default = 20)
+    exam_current = db.Column(db.Integer, nullable = False, default = 0)
+
+class Registration(db.Model):
+    registration_id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), 
+                                                    nullable = False)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exam.exam_id'), 
+                                                    nullable = False)
+
 
 ### ---------- Password Verification Functions ---------- ###
 
@@ -86,10 +104,6 @@ def dashboard():
             return render_template("dashboard.html",
                                      first_name = user.first_name,
                                      last_name  = user.last_name)
-# --- My Reservation Page --- #                                            
-@app.route("/my_reservations")
-def my_reservations():
-    return render_template("my_reservations.html")
 
 # --- dashboard_faculty --- #
 @app.route("/dashboard_faculty")
@@ -101,6 +115,25 @@ def dashboard_faculty():
             return render_template("dashboard_faculty.html",
                                    first_name = user.first_name,
                                    last_name = user.last_name)
+        
+# --- My Reservation Page --- #                                            
+@app.route("/my_reservations")
+def my_reservations():
+    return render_template("my_reservations.html")
+
+# --- edit_database --- #
+@app.route("/edit_database")
+def edit_database():
+    if "email" in session:
+        user = User.query.filter_by(email=session["email"]).first()
+        exams = Exam.query.all()
+
+        if user:
+            return render_template("edit_database.html",
+                                   first_name = user.first_name,
+                                   last_name = user.last_name,
+                                   exams=exams)
+
     
 ## ----- Authentication Routes ----- ##
 
@@ -123,7 +156,7 @@ def register():
     # email, assign it to the local variable user
     user = User.query.filter_by(email=email).first()
 
-    # Checks the truth value of the variable user.
+    # Checks the truth value of the variable user
     #   Returns true if it contains a valid row in the User table
     #   Returns false if the value is "none" - user not found
     if user:
@@ -204,6 +237,41 @@ def logout():
     # Redirect user to the index page.
     return redirect(url_for("index"))
 
+# Add Exam
+@app.route("/add_exam", methods=["POST"])
+def add_exam():
+    exam_name = request.form["exam_name"]
+    exam_datetime = request.form["exam_datetime"]
+    exam_location = request.form["exam_location"]
+    exam_proctor = request.form["exam_proctor"]
+
+    exam_datetime = datetime.fromisoformat(exam_datetime)
+
+    new_exam = Exam()
+    
+    new_exam.exam_name = exam_name
+    new_exam.exam_datetime = exam_datetime
+    new_exam.exam_location = exam_location
+    new_exam.exam_proctor = exam_proctor
+
+    db.session.add(new_exam)
+    db.session.commit()
+
+    return redirect(url_for("edit_database"))
+
+
+    
+
+@app.route("/remove_exam", methods=["POST"])
+def remove_exam():
+    exam_id = request.form["id"]
+    exam = Exam.query.filter_by(exam_id=exam_id).first()
+    
+    if exam:
+        db.session.delete(exam)
+        db.session.commit()
+
+    return redirect(url_for("edit_database"))
 
 # Ensures application can only be run directly - never when imported.
 # Ignore for now.
