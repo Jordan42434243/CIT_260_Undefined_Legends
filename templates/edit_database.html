@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Edit Database</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="../static/styles.css" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="header__inner">
+      <div><strong>Edit Database</strong></div>
+      <nav class="header__nav">
+        <a href="dashboard_faculty">Dashboard</a>
+        <a href="{{url_for('logout')}}">Logout</a>
+        <!-- Show who is signed in (faculty) -->
+        <span class="user-info">{{ first_name }} {{ last_name }}</span>
+      </nav>
+      
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="card">
+      <h2 class="card__title" id="header">Add Exam</h2>
+    
+      <label for="formSelect">Choose a form</label>
+      <select id="formSelect">
+        <option value = "addExam">Add Exam</option>
+        <option value = "removeExam">Remove Exam</option>
+      </select>
+
+      <form class="form" id="addExamForm" action="/add_exam" method="POST">
+        <label class="label">Name:</label>
+        <input type="text" name="exam_name">
+
+        <label class="label">Date/Time:</label>
+        <input type="datetime-local" name="exam_datetime">
+
+        <label class="label">Location:</label>
+        <input type="text" name="exam_location">
+
+        <label class="label">Proctor:</label>
+        <input type="text" name="exam_proctor">
+
+        <div><button type="submit">Submit</button></div>
+      </form>
+
+      <form class="form" id="removeExamForm" action="{{url_for('remove_exam')}}" method="POST" style="display:none;">
+        <label class="label" name="temp">Enter ID of exam to be removed:</label>
+        <input type="text" name="id" pattern="\d{1,2}" title="Single or double digit ID number" required>
+
+        <div><button type="submit">Submit</button></div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2 class="card__title">Current Exams</h2>
+
+      <table border="1">
+        <thread>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date/Time</th>
+            <th>Location</th>
+            <th>Proctor</th>
+            <th>Capacity</th>
+            <th>Current</th>
+          </tr>
+        </thread>
+        <tbody>
+          {% for exam in exams %}
+          <tr>
+            <td>{{ exam.exam_id}}</td>
+            <td>{{ exam.exam_name }}</td>
+            <td>{{ exam.exam_datetime }}</td>
+            <td>{{ exam.exam_location }}</td>
+            <td>{{ exam.exam_proctor }}</td>
+            <td>{{ exam.exam_capacity }}</td>
+            <td>{{ exam.exam_current }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7">No exams scheduled.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+
+    </section>
+
+   
+  </main>
+
+  <footer class="footer">© CSN Testing Center</footer>
+
+  <script>
+    const formSelect = document.getElementById('formSelect')
+    const addExamForm = document.getElementById('addExamForm')
+    const removeExamForm = document.getElementById('removeExamForm')
+    const header = document.getElementById('header')
+  
+
+    formSelect.addEventListener('change', function() {
+      if (this.value === 'addExam') {
+        addExamForm.style.display = 'block';
+        removeExamForm.style.display = 'none';
+        header.textContent = "Add Exam";
+      } else if (this.value === 'removeExam') {
+        addExamForm.style.display = 'none';
+        removeExamForm.style.display = 'block';
+        header.textContent = "Remove Exam";
+      }
+    });
+  </script>
+
+
+
+
+</body>
+</html>
+
+
