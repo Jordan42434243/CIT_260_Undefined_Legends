@@ -97,19 +97,22 @@ def dashboard():
 
         # Filter through DB until correct user is identified
         user = User.query.filter_by(email=session["email"]).first()
+        exams = Exam.query.all()
 
         # Display the user's unique dashboard
         # Pass the user's firstname and last name to "dashboard.html"
         if user:
             return render_template("dashboard.html",
                                      first_name = user.first_name,
-                                     last_name  = user.last_name)
+                                     last_name  = user.last_name,
+                                     exams=exams)
 
 # --- dashboard_faculty --- #
 @app.route("/dashboard_faculty")
 def dashboard_faculty():
     if "email" in session:
         user = User.query.filter_by(email=session["email"]).first()
+       
         
         if user:
             return render_template("dashboard_faculty.html",
@@ -240,31 +243,38 @@ def logout():
 # Add Exam
 @app.route("/add_exam", methods=["POST"])
 def add_exam():
+    # Get exam data from form submission
     exam_name = request.form["exam_name"]
     exam_datetime = request.form["exam_datetime"]
     exam_location = request.form["exam_location"]
     exam_proctor = request.form["exam_proctor"]
 
+    # Convert datetime variable to a format acceptable by DB
     exam_datetime = datetime.fromisoformat(exam_datetime)
 
+    # Create new row in Exam table
     new_exam = Exam()
     
+    # Fill new row with data gathered from form submission
     new_exam.exam_name = exam_name
     new_exam.exam_datetime = exam_datetime
     new_exam.exam_location = exam_location
     new_exam.exam_proctor = exam_proctor
 
+    # Stage changes
     db.session.add(new_exam)
+    # Finalize changes
     db.session.commit()
 
+    # Refresh page
     return redirect(url_for("edit_database"))
-
-
-    
 
 @app.route("/remove_exam", methods=["POST"])
 def remove_exam():
+
+    # Get user input from form
     exam_id = request.form["id"]
+    
     exam = Exam.query.filter_by(exam_id=exam_id).first()
     
     if exam:

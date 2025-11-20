@@ -15,7 +15,6 @@
       <div><strong>Exam Registration</strong></div>
       <nav class="header__nav">
         <a href="dashboard">Home</a>
-        <a href="#make-reservation"></a>Make a reservation</a>
         <a href="my_reservations">My Reservations</a>
         <a href="{{ url_for('logout') }}">Logout</a>
 		<span class="user-info">{{ first_name }} {{ last_name }}</span>
@@ -24,36 +23,21 @@
   </header>
 
   <main class="main grid grid--2">
-    <section class="card">
-      <div class="grid">
-        <div>
-          <span class="label">Name</span>
-          <div class="help">{{ first_name }} {{ last_name }}</div>
-        </div>
-        <div>
-          <span class="label">Email</span>
-          <div class="help">{{ email }}</div>
-        </div>
-        <div>
-          <span class="label">Role</span>
-          <div class="help">{{ role }}</div>
-        </div>
-      </div>
-    </section>
+
 
     <!-- Make a Reservation -->
     <section id="make-reservation" class="card">
       <h2 class="card__title">Make a Reservation</h2>
 
-      <form class="form" method="post" action="{{ url_for('register') }}" novalidate>
+      <form class="form" method="post" action="{{ url_for('register') }}">
         <!-- 0) Select Class -->
         <div class="form__row">
-          <label class="label" for="class">Class</label>
+          <label class="label" for="class">Exam</label>
           <select id="class" name="class_name" class="select" required>
-            <option value="">— Select Class —</option>
-            <option value="Math">Math</option>
-            <option value="English">English</option>
-            <option value="Computer Science">Computer Science</option>
+            <option value="" disabled selected hidden>— Select Class —</option>
+            {% for exam in exams %}
+            <option value="{{ exam.exam_id }}">{{ exam.exam_name }}</option>
+            {% endfor %}
           </select>
         </div>
 
