@@ -1,0 +1,75 @@
+/* ---------- Root Variables ---------- */
+:root {
+  --brand: #1e3a8a;          
+  --brand-light: #2563eb;
+  --text-color: #111827;
+  --bg-color: #f9fafb;
+  --border-color: #d1d5db;
+  --radius: 8px;
+}
+
+/* ---------- Reset ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* centered header */
+
+.header--centered {
+  background: var(--brand);
+  color: white;
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+.header__inner--centered {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+  letter-spacing: 0.5px;
+}
+
+/* page layout */
+
+.main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* cards */
+
+.card {
+  background: transparent;        
+  border: none;                   
+  padding: 1rem 0;                  
+  margin-bottom: 2.5rem;            
+}
+
+.card__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+#email {
+  width: 30%;
+  height: 42px;
+  resize: none;
+}
+
+/

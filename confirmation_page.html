@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Exam Registration Confirmation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="confirm_styles.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Centered header -->
+  <header class="header--centered">
+    <div class="header__inner--centered">
+      <h1 class="header-title">Exam Registration Confirmation Page</h1>
+
+      <nav class="header-nav-centered">
+      </nav>
+    </div>
+  </header>
+
+  <! -- MAIN -->
+  <main class="main">
+
+    <!-- Summary section (card) -->
+    <section class="card">
+      <h2 class="card__title">Reservation Summary</h2>
+
+      <div class="kv">
+        <div class="k">Student</div>
+        <div class="v">{{ first_name }} {{ last_name }} (NSHE {{ nshe }})</div>
+
+        <div class="k">Subject</div>
+        <div class="v">{{ class_name }}</div>
+
+        <div class="k">Exam</div>
+        <div class="v">{{ exam_title }}</div>
+
+        <div class="k">Location / Room</div>
+        <div class="v">{{ location }} • {{ room }}</div>
+
+        <div class="k">Proctor</div>
+        <div class="v">{{ proctor_name }}</div>
+
+        <div class="k">Date / Time</div>
+        <div class="v">{{ exam_datetime }}</div>
+      </div>
+    </section>
+
+   <!-- Send Confirmation Email section -->
+<section class="card">
+  <h2 class="card__title">Send Confirmation Email?</h2>
+  <p class="help">
+    If “No”, you’ll be logged out. If “Yes”, enter a valid email address and click the button.
+  </p>
+
+  <form id="confirmEmailForm" class="form" method="post" action="{{ url_for('send_confirmation_email') }}" novalidate>
+    <!-- Radios -->
+    <div class="form__row">
+      <span class="label">Choose an option:</span>
+      <label>
+        <input type="radio" name="send_email" id="rbYes" value="yes">
+        Yes
+      </label>
+      &nbsp;&nbsp;
+      <label>
+        <input type="radio" name="send_email" id="rbNo" value="no">
+        No
+      </label>
+    </div>
+
+    <!-- Email field (starts hidden) -->
+    <div id="emailBlock" class="form__row hidden">
+      <label class="label" for="email">Destination Email</label>
+      <textarea class="textarea" id="email" name="email"
+                placeholder="NSHE@student.csn.edu"></textarea>
+    </div>
+
+    <!-- Hidden ids for backend -->
+    <input type="hidden" name="reservation_id" value="{{ reservation_id }}">
+    <input type="hidden" name="student_id" value="{{ student_id }}">
+
+    <div class="form__row">
+      <button type="submit" class="button" id="sendBtn">Send Confirmation Email</button>
+    </div>
+  </form>
+</section>
+
+  </main>
+
+  <footer class="footer">
+  </footer>
+
+  <script>
+    (function() {
+      const rbYes = document.getElementById('rbYes');
+      const rbNo = document.getElementById('rbNo');
+      const emailBlock = document.getElementById('emailBlock');
+      const emailInput = document.getElementById('email');
+      const form = document.getElementById('confirmEmailForm');
+
+      if (!rbYes || !rbNo || !emailBlock || !emailInput || !form) {
+        console.warn('Confirmation email elements not found – check IDs.');
+        return;
+      }
+
+      // NO -> logout immediately
+      rbNo.addEventListener('change', function () {
+        if (this.checked) {
+          window.location.href = "{{ url_for('logout') }}";
+        }
+      });
+
+      // YES -> show & highlight email field
+      rbYes.addEventListener('change', function () {
+        if (this.checked) {
+          emailBlock.classList.remove('hidden');
+          emailInput.classList.add('highlight');
+          emailInput.setAttribute('required', 'required');
+          emailInput.focus();
+        }
+      });
+
+      // On submit, make sure choice + email are valid
+      form.addEventListener('submit', function (e) {
+        const yes = rbYes.checked;
+        const no  = rbNo.checked;
+
+        if (no) {
+          // Should already be redirected, but just in case:
+          e.preventDefault();
+          window.location.href = "{{ url_for('logout') }}";
+          return;
+        }
+
+        if (!yes) {
+          e.preventDefault();
+          alert('Please choose Yes or No first.');
+          return;
+        }
+
+        if (yes) {
+          if (!emailInput.value.trim()) {
+            e.preventDefault();
+            emailInput.classList.add('highlight');
+            emailInput.focus();
+            alert('Please enter a destination email.');
+            return;
+          }
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
