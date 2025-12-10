@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Email Demo – Confirmation</title>
+  <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+</head>
+<body>
+  <main class="main">
+    <section class="card">
+      <h2 class="card__title">Confirmation Email (Demo)</h2>
+      <p class="help">
+        This shows what would be sent to the student's email address.<br>
+        No real email was sent.
+      </p>
+
+      <div class="form__row">
+        <strong>To:</strong> {{ email_to }}
+      </div>
+      <div class="form__row">
+        <strong>Subject:</strong> {{ subject }}
+      </div>
+
+      <hr>
+
+      <pre style="white-space: pre-wrap;">{{ body }}</pre>
+
+      <p style="margin-top:1.5rem;">
+        <a href="{{ url_for('dashboard') }}" class="button">Return to Dashboard</a>
+      </p>
+    </section>
+  </main>
+</body>
+</html>

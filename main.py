@@ -109,7 +109,7 @@ def dashboard():
 
         # Filter through DB until correct user is identified
         user = User.query.filter_by(email=session["email"]).first()
-        exams = Exam.query.filter(Exam.exam_current < 20).all()
+        exams = Exam.query.filter(Exam.exam_current < Exam.exam_capacity).all()
         exam_names = sorted({exam.exam_name for exam in exams})
         error = request.args.get("error")
 
@@ -165,6 +165,61 @@ def confirmation():
     exam = Exam.query.filter_by(exam_id=exam_id).first()
     
     return render_template("confirmation.html", user=user, exam=exam)  
+
+##  NEW CODE TO SEND A CONFIRMATION EMAIL TO A TEMPLATE PAGE, NOT A REAL MAIL SERVER
+@app.route("/send_confirmation_email", methods=["POST"])
+def send_confirmation_email():
+    # Require login
+    if "email" not in session:
+        return redirect(url_for("login_page"))
+
+    send_email_choice = request.form.get("send_email")
+    exam_id = request.form.get("exam_id")
+    email_to = request.form.get("email") or session["email"]
+
+    # If they picked “No”
+    if send_email_choice != "yes":
+        return redirect(url_for("logout"))
+
+    # Look up user and exam
+    user = User.query.filter_by(email=session["email"]).first()
+    exam = Exam.query.filter_by(exam_id=exam_id).first()
+
+    if not user or not exam:
+        return redirect(url_for("dashboard", error="Unable to generate confirmation email."))
+
+    # Build the demonstration “email” message
+    subject = "Exam Registration Confirmation (DEMO)"
+    body = (
+        f"Hello {user.first_name} {user.last_name},\n\n"
+        f"You have successfully registered for:\n\n"
+        f"Exam: {exam.exam_name}\n"
+        f"Date: {exam.exam_datetime.strftime('%Y-%m-%d %I:%M %p')}\n"
+        f"Location: {exam.exam_location}\n"
+        f"Proctor: {exam.exam_proctor}\n\n"
+        "This is a DEMO confirmation email — it was not actually sent.\n"
+    )
+
+    # Log to an outfile 
+    try:
+        with open("sent_emails_demo.txt", "a", encoding="utf-8") as f:
+            f.write(f"TO: {email_to}\n")
+            f.write(f"SUBJECT: {subject}\n\n")
+            f.write(body)
+            f.write("\n" + "-" * 60 + "\n\n")
+    except Exception as e:
+        print("Failed to write demo email log:", e)
+
+    # Show an "emial" page instead of sending a real email
+    return render_template(
+        "email_demo.html",
+        email_to=email_to,
+        subject=subject,
+        body=body,
+        user=user,
+        exam=exam
+    )
+
 
 ## ----- Authentication Routes ----- ##
 

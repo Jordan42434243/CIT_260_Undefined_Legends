@@ -75,8 +75,10 @@
             <td>{{ exam.exam_datetime }}</td>
             <td>{{ exam.exam_location }}</td>
             <td>{{ exam.exam_proctor }}</td>
-            <td>{{ exam.exam_capacity }}</td>
-            <td>{{ exam.exam_current }}</td>
+            <!-- Capacity minus number registered -->
+			<td>{{ exam.exam_capacity - exam.exam_current }}</td>
+			<!-- How many are registered -->
+			<td>{{ exam.exam_current }}</td>
           </tr>
           {% else %}
           <tr>

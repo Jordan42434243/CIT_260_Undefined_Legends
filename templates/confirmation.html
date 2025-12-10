@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <title>Exam Registration Confirmation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="../static/styles.css" rel="stylesheet">
+  <!-- Better: use url_for static -->
+  <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
 </head>
 <body>
   <!-- Centered header -->
@@ -15,12 +16,12 @@
         <a href="dashboard">Home</a>
         <a href="my_reservations">My Reservations</a>
         <a href="{{ url_for('logout') }}">Logout</a>
-		<span class="user-info">{{ first_name }} {{ last_name }}</span>
+        <span class="user-info">{{ user.first_name }} {{ user.last_name }}</span>
       </nav>
     </div>
   </header>
 
-  <! -- MAIN -->
+  <!-- MAIN -->
   <main class="main">
 
     <!-- Summary section (card) -->
@@ -35,7 +36,7 @@
         <div class="v">{{ exam.exam_name }}</div>
 
         <div class="k">Location</div>
-        <div class="v">{{ exam.exam_location }} </div>
+        <div class="v">{{ exam.exam_location }}</div>
 
         <div class="k">Proctor</div>
         <div class="v">{{ exam.exam_proctor }}</div>
@@ -45,44 +46,54 @@
       </div>
     </section>
 
-   <!-- Send Confirmation Email section -->
-<section class="card">
-  <h2 class="card__title">Send Confirmation Email?</h2>
-  <p class="help">
-    If “No”, you’ll be logged out. If “Yes”, enter a valid email address and click the button.
-  </p>
+    <!-- Send Confirmation Email section -->
+    <section class="card">
+      <h2 class="card__title">Send Confirmation Email?</h2>
+      <p class="help">
+        If “No”, you’ll be logged out. If “Yes”, enter a valid email address and click the button.
+      </p>
 
-  <form id="confirmEmailForm" class="form" method="post" novalidate>
-    <!-- Radios -->
-    <div class="form__row">
-      <span class="label">Choose an option:</span>
-      <label>
-        <input type="radio" name="send_email" id="rbYes" value="yes">
-        Yes
-      </label>
-      &nbsp;&nbsp;
-      <label>
-        <input type="radio" name="send_email" id="rbNo" value="no">
-        No
-      </label>
-    </div>
+      <!-- CHANGED: add action to send to Flask route -->
+      <form id="confirmEmailForm"
+            class="form"
+            method="post"
+            action="{{ url_for('send_confirmation_email') }}"
+            novalidate>
 
-    <!-- Email field (starts hidden) -->
-    <div id="emailBlock" class="form__row hidden">
-      <label class="label" for="email">Destination Email</label>
-      <textarea class="textarea" id="email" name="email"
-                placeholder="NSHE@student.csn.edu"></textarea>
-    </div>
+        <!-- Radios -->
+        <div class="form__row">
+          <span class="label">Choose an option:</span>
+          <label>
+            <input type="radio" name="send_email" id="rbYes" value="yes">
+            Yes
+          </label>
+          &nbsp;&nbsp;
+          <label>
+            <input type="radio" name="send_email" id="rbNo" value="no">
+            No
+          </label>
+        </div>
 
-    <!-- Hidden ids for backend -->
-    <input type="hidden" name="reservation_id" value="{{ reservation_id }}">
-    <input type="hidden" name="student_id" value="{{ student_id }}">
+        <!-- Email field (starts hidden) -->
+        <div id="emailBlock" class="form__row hidden">
+          <label class="label" for="email">Destination Email</label>
+          <!-- You can keep textarea if you want; input type="email" is more typical. -->
+          <input class="textarea"
+                 type="email"
+                 id="email"
+                 name="email"
+                 placeholder="NSHE@student.csn.edu"
+                 value="{{ user.email }}">
+        </div>
 
-    <div class="form__row">
-      <button type="submit" class="button" id="sendBtn">Send Confirmation Email</button>
-    </div>
-  </form>
-</section>
+        <!-- Hidden exam id for backend -->
+        <input type="hidden" name="exam_id" value="{{ exam.exam_id }}">
+
+        <div class="form__row">
+          <button type="submit" class="button" id="sendBtn">Send Confirmation Email</button>
+        </div>
+      </form>
+    </section>
 
   </main>
 
@@ -145,6 +156,7 @@
             alert('Please enter a destination email.');
             return;
           }
+          // If valid, let the form submit to send_confirmation_email
         }
       });
     })();
