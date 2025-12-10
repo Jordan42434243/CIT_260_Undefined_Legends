@@ -4,6 +4,7 @@ from datetime import datetime
 
 # Application Setup
 app = Flask(__name__)
+
 app.secret_key = "secret_key"
 
 # Database Config
@@ -54,7 +55,18 @@ def verify_password_create(password, email, role):
         status = len(password) >= 8
 
     return status
-        
+
+def incrementCurrent(exam_id):
+    exam = Exam.query.filter_by(exam_id = exam_id).first()
+    exam.exam_current += 1
+    db.session.commit()
+
+def decrementCurrent(exam_id):
+    exam = Exam.query.filter_by(exam_id = exam_id).first()
+    exam.exam_current -= 1
+    db.session.commit()
+
+
 ### ---------- Routes ---------- ###
 
 ## ----- Get Page Routes ----- ##
@@ -97,7 +109,9 @@ def dashboard():
 
         # Filter through DB until correct user is identified
         user = User.query.filter_by(email=session["email"]).first()
-        exams = Exam.query.all()
+        exams = Exam.query.filter(Exam.exam_current < 20).all()
+        exam_names = sorted({exam.exam_name for exam in exams})
+        error = request.args.get("error")
 
         # Display the user's unique dashboard
         # Pass the user's firstname and last name to "dashboard.html"
@@ -105,9 +119,10 @@ def dashboard():
             return render_template("dashboard.html",
                                      first_name = user.first_name,
                                      last_name  = user.last_name,
-                                     exams=exams)
+                                     exams=exams, exam_names=exam_names, 
+                                     error=error)
 
-# --- dashboard_faculty --- #
+# --- dashboard_faculty Page --- #
 @app.route("/dashboard_faculty")
 def dashboard_faculty():
     if "email" in session:
@@ -122,9 +137,14 @@ def dashboard_faculty():
 # --- My Reservation Page --- #                                            
 @app.route("/my_reservations")
 def my_reservations():
-    return render_template("my_reservations.html")
+    user = User.query.filter_by(email=session["email"]).first()
+    registrations = Registration.query.filter_by(user_id = user.user_id).all()
+    exam_ids = [r.exam_id for r in registrations]
+    exams = Exam.query.filter(Exam.exam_id.in_(exam_ids)).all()
+    
+    return render_template("my_reservations.html", user=user, exams=exams)
 
-# --- edit_database --- #
+# --- edit_database Page --- #
 @app.route("/edit_database")
 def edit_database():
     if "email" in session:
@@ -137,7 +157,15 @@ def edit_database():
                                    last_name = user.last_name,
                                    exams=exams)
 
+# --- Confirmation Page --- #
+@app.route("/confirmation")
+def confirmation():
+    exam_id = request.args.get("exam_id")
+    user = User.query.filter_by(email=session["email"]).first()
+    exam = Exam.query.filter_by(exam_id=exam_id).first()
     
+    return render_template("confirmation.html", user=user, exam=exam)  
+
 ## ----- Authentication Routes ----- ##
 
 # Register
@@ -283,6 +311,43 @@ def remove_exam():
 
     return redirect(url_for("edit_database"))
 
+@app.route("/register_exam", methods=["POST"])
+def register_exam():
+
+    exam_id = request.form["exam_id"]
+    exam = Exam.query.filter_by(exam_id = exam_id).first()
+    user = User.query.filter_by(email = session["email"]).first()
+    registration = Registration.query.filter_by(exam_id=exam_id, user_id=user.user_id).first()
+    
+    if registration:
+        return redirect(url_for("dashboard", error = "No Duplicate Registrations!"))
+
+    else:
+        new_registration = Registration()
+        new_registration.exam_id = exam.exam_id
+        new_registration.user_id = user.user_id
+        db.session.add(new_registration)
+        db.session.commit()
+        incrementCurrent(exam_id)
+        return redirect(url_for("confirmation", exam_id=exam_id))
+
+@app.route("/cancel_exam", methods=["POST"])
+def cancel_exam():
+
+    exam_id = request.form["exam_id"]
+
+    exam = Exam.query.filter_by(exam_id = exam_id).first()
+    user = User.query.filter_by(email = session["email"]).first()
+
+    registration = Registration.query.filter_by(exam_id=exam_id, user_id=user.user_id).first()
+
+    if registration:
+        db.session.delete(registration)
+        db.session.commit()
+        decrementCurrent(exam_id)
+    
+    return redirect(url_for("my_reservations"))
+    
 # Ensures application can only be run directly - never when imported.
 # Ignore for now.
 if __name__ == "__main__":
@@ -290,6 +355,9 @@ if __name__ == "__main__":
         db.create_all()
     app.run(debug=True)
 
+
+
+    
 
 
 

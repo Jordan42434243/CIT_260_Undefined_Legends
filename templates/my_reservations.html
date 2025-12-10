@@ -13,107 +13,54 @@
       <nav class="header__nav">
         <a href="dashboard">Dashboard</a>
         <a href="logout">Logout</a>
-		<span class="user-info">{{ first_name }} {{ last_name }}</span>
+		<span class="user-info">{{ user.first_name }} {{ user.last_name }}</span>
       </nav>
     </div>
   </header>
 
   <main class="main">
-    <!-- Filter Bar -->
-    <section class="card">
-      <h2 class="card__title">Filter</h2>
-      <form class="form grid grid--3" method="get" action="{{ url_for('my_reservations') }}">
-        <!-- Subject -->
-        <div class="form__row">
-          <label class="label" for="subject">Subject</label>
-          <select id="subject" name="subject" class="select">
-            <option value="">Any</option>
-            <option value="Math"             {% if request.args.get('subject') == 'Math' %}selected{% endif %}>Math</option>
-            <option value="English"          {% if request.args.get('subject') == 'English' %}selected{% endif %}>English</option>
-            <option value="Computer Science" {% if request.args.get('subject') == 'Computer Science' %}selected{% endif %}>Computer Science</option>
 
-          </select>
-        </div>
+        <section class="card">
+      <h2 class="card__title" id="header">Cancel Exam</h2>
+  
+      <form class="form" id="removeExamForm" action="{{url_for('cancel_exam')}}" method="POST">
+        <label class="label" name="temp">Enter ID of exam to be removed:</label>
+        <input type="text" name="exam_id" pattern="\d{1,2}" title="Single or double digit ID number" required>
 
-        <!-- Time (timeslot strings provided by backend, e.g., "2025-10-30 09:00 AM") -->
-        <div class="form__row">
-          <label class="label" for="time">Time</label>
-          <select id="time" name="time" class="select">
-            <option value="">Any</option>
-            {% for t in available_times %}
-              <!--<option value="{{ t }}" {% if request.args.get('time') == t %}selected{% endif %}>{{ t }}</option>-->
-            {% endfor %}
-          </select>
-        </div>
-
-        <!-- Location -->
-        <div class="form__row">
-          <label class="label" for="location">Location</label>
-          <select id="location" name="location" class="select">
-            <option value="">Any</option>
-            <!--<option value="Charleston" {% if request.args.get('location') == 'Charleston' %}selected{% endif %}>Charleston</option>
-            <option value="Henderson"  {% if request.args.get('location') == 'Henderson' %}selected{% endif %}>Henderson</option>
-            -->
-          </select>
-        </div>
-
-        <div class="form__row" style="grid-column: 1 / -1;">
-          <button class="button" type="submit">Apply filters</button>
-          <a class="button button--ghost" href="{{ url_for('my_reservations') }}" style="margin-left:8px;">Reset</a>
-        </div>
+        <div><button type="submit">Submit</button></div>
       </form>
     </section>
 
-    <!-- Results -->
     <section class="card">
       <h3 class="card__title">Your Reservations</h3>
-      <table class="table">
-        <thead>
+            <table border="1">
+        <thread>
           <tr>
-            <th>Subject</th>
-            <th>Exam</th>
-            <th>Time</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date/Time</th>
             <th>Location</th>
-            <th>Room</th>
             <th>Proctor</th>
-            <th>Status</th>
-            <th style="width: 1%;">Actions</th>
+            <th>Capacity</th>
+            <th>Current</th>
           </tr>
-        </thead>
+        </thread>
         <tbody>
-          {% if my_reservations and my_reservations|length > 0 %}
-            {% for r in my_reservations %}
-              <tr>
-                <td>{{ r.class_name }}</td>
-                <td>{{ r.exam_title }}</td>
-                <td>{{ r.when_human }}</td>
-                <td>{{ r.location }}</td>
-                <td>{{ r.room }}</td>
-                <td>{{ r.proctor_name }}</td>
-                <td>
-                  {% if r.active %}
-                    <span class="status status--ok">Active</span>
-                  {% else %}
-                    <span class="status">Cancelled</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if r.active %}
-                    <form method="post" action="{{ url_for('cancel') }}">
-                      <input type="hidden" name="registration_id" value="{{ r.id }}">
-                      <button class="button button--ghost" type="submit" title="Cancel this reservation">Cancel</button>
-                    </form>
-                  {% else %}
-                    —
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
+          {% for exam in exams %}
+          <tr>
+            <td>{{ exam.exam_id }}</td>
+            <td>{{ exam.exam_name }}</td>
+            <td>{{ exam.exam_datetime }}</td>
+            <td>{{ exam.exam_location }}</td>
+            <td>{{ exam.exam_proctor }}</td>
+            <td>{{ exam.exam_capacity }}</td>
+            <td>{{ exam.exam_current }}</td>
+          </tr>
           {% else %}
-            <tr>
-              <td colspan="8" class="help">No reservations match your filters.</td>
-            </tr>
-          {% endif %}
+          <tr>
+            <td colspan="7">No exams scheduled.</td>
+          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </section>
