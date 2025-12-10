@@ -4,15 +4,18 @@
   <meta charset="utf-8">
   <title>Exam Registration Confirmation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="confirm_styles.css" rel="stylesheet">
+  <link href="../static/styles.css" rel="stylesheet">
 </head>
 <body>
   <!-- Centered header -->
-  <header class="header--centered">
-    <div class="header__inner--centered">
-      <h1 class="header-title">Exam Registration Confirmation Page</h1>
-
-      <nav class="header-nav-centered">
+  <header class="header">
+    <div class="header__inner">
+      <div><strong>Exam Registration</strong></div>
+      <nav class="header__nav">
+        <a href="dashboard">Home</a>
+        <a href="my_reservations">My Reservations</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+		<span class="user-info">{{ first_name }} {{ last_name }}</span>
       </nav>
     </div>
   </header>
@@ -26,22 +29,19 @@
 
       <div class="kv">
         <div class="k">Student</div>
-        <div class="v">{{ first_name }} {{ last_name }} (NSHE {{ nshe }})</div>
-
-        <div class="k">Subject</div>
-        <div class="v">{{ class_name }}</div>
+        <div class="v">{{ user.first_name }} {{ user.last_name }}</div>
 
         <div class="k">Exam</div>
-        <div class="v">{{ exam_title }}</div>
+        <div class="v">{{ exam.exam_name }}</div>
 
-        <div class="k">Location / Room</div>
-        <div class="v">{{ location }} • {{ room }}</div>
+        <div class="k">Location</div>
+        <div class="v">{{ exam.exam_location }} </div>
 
         <div class="k">Proctor</div>
-        <div class="v">{{ proctor_name }}</div>
+        <div class="v">{{ exam.exam_proctor }}</div>
 
         <div class="k">Date / Time</div>
-        <div class="v">{{ exam_datetime }}</div>
+        <div class="v">{{ exam.exam_datetime }}</div>
       </div>
     </section>
 
@@ -52,7 +52,7 @@
     If “No”, you’ll be logged out. If “Yes”, enter a valid email address and click the button.
   </p>
 
-  <form id="confirmEmailForm" class="form" method="post" action="{{ url_for('send_confirmation_email') }}" novalidate>
+  <form id="confirmEmailForm" class="form" method="post" novalidate>
     <!-- Radios -->
     <div class="form__row">
       <span class="label">Choose an option:</span>

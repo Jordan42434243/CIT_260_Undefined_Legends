@@ -14,7 +14,6 @@
     <div class="header__inner">
       <div><strong>Exam Registration</strong></div>
       <nav class="header__nav">
-        <a href="dashboard">Home</a>
         <a href="my_reservations">My Reservations</a>
         <a href="{{ url_for('logout') }}">Logout</a>
 		<span class="user-info">{{ first_name }} {{ last_name }}</span>
@@ -29,49 +28,69 @@
     <section id="make-reservation" class="card">
       <h2 class="card__title">Make a Reservation</h2>
 
-      <form class="form" method="post" action="{{ url_for('register') }}">
+      <form class="form" method="post" action="{{ url_for('register_exam') }}">
+
         <!-- 0) Select Class -->
         <div class="form__row">
           <label class="label" for="class">Exam</label>
-          <select id="class" name="class_name" class="select" required>
-            <option value="" disabled selected hidden>— Select Class —</option>
-            {% for exam in exams %}
-            <option value="{{ exam.exam_id }}">{{ exam.exam_name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <!-- 1) Select Exam (your backend can filter based on class_name if desired) -->
-        <div class="form__row">
-          <label class="label" for="exam">Exam</label>
-          <select id="exam" name="exam_id" class="select" required>
-            <option value="">— Select Exam —</option>
-            {% for exam in available_exams %}
-              <option value="{{ exam.id }}">{{ exam.title }}</option>
+          <select id="exam_dropdown" name="exam_name" class="select" required>
+            <option value="" disabled selected hidden>— Select Exam —</option>
+            {% for exam_name in exam_names %}
+            <option value="{{ exam_name }}">{{ exam_name }}</option>
             {% endfor %}
           </select>
           <div class="help">You may hold up to 3 different exams.</div>
+
+                 
+        <div class="form__row">
+          <label class="label" for="class">Session ID</label>
+          <select id="id_dropdown" name="exam_id" class="select" required>
+            <option value="" disabled selected hidden>— Select ID —</option>
+            {% for exam in exams %}
+            <option value="{{ exam.exam_id }}" data-exam-name="{{exam.exam_name}}">{{ exam.exam_id }}</option>
+            {% endfor %}
+          </select>
+          
+
+        </div>
         </div>
 
-        <!-- 2) Available Sessions -->
-        <fieldset class="form__row" role="radiogroup" aria-labelledby="sessionsLegend">
-          <legend id="sessionsLegend" class="label">Available Sessions</legend>
-          <ul class="list">
-            {% for s in available_sessions %}
-              <li>
-                <label class="{{ 'help' if s.is_full }}">
-                  <input type="radio" name="session_id" value="{{ s.id }}" {% if s.is_full %}disabled{% endif %} required>
-                  {{ s.when_human }} {% if s.is_full %}(Full){% else %}({{ s.seats_left }} seats left){% endif %}
-                </label>
-              </li>
-            {% endfor %}
-          </ul>
-        </fieldset>
+      <table id="session_table" border="1">
+        <thread>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date/Time</th>
+            <th>Location</th>
+            <th>Proctor</th>
+            <th>Capacity</th>
+            <th>Current</th>
+          </tr>
+        </thread>
+        <tbody>
+          {% for exam in exams %}
+          <tr data-exam_name="{{exam.exam_name}}">
+            <td>{{ exam.exam_id }}</td>
+            <td>{{ exam.exam_name }}</td>
+            <td>{{ exam.exam_datetime }}</td>
+            <td>{{ exam.exam_location }}</td>
+            <td>{{ exam.exam_proctor }}</td>
+            <td>{{ exam.exam_capacity }}</td>
+            <td>{{ exam.exam_current }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7">No exams scheduled.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
         <!-- Hidden student id if needed by your server -->
         <input type="hidden" name="student_id" value="{{ student_id }}">
 
         <button class="button" type="submit">Confirm Reservation</button>
+        {% if error %}<label class="label error">{{ error }}</label>{% endif %}
         <p class="help">You cannot book the same exam twice. Capacity limits apply per session.</p>
       </form>
     </section>
@@ -80,5 +99,43 @@
   </main>
 
   <footer class="footer">© CSN Testing Center</footer>
+
+ 
+ <script>
+  const examDropdown = document.getElementById("exam_dropdown");
+  const idDropdown = document.getElementById("id_dropdown");
+  const sessions = document.querySelectorAll("#session_table tr[data-exam_name]");
+
+
+  examDropdown.addEventListener("change", function() {
+
+    const selectedExam = examDropdown.value;
+
+    sessions.forEach(session => {
+      const sessionExamName = session.dataset.exam_name;
+
+      if (sessionExamName === selectedExam) {
+        session.style.display = "";
+      } else {
+        session.style.display = "none";
+      }
+    });
+  });
+
+  examDropdown.addEventListener("change", function() {
+
+
+    const idOptions = idDropdown.querySelectorAll("option");
+    const selectedExam = examDropdown.value;
+
+    idOptions.forEach(option => {
+    if (option.dataset.examName === selectedExam) {
+      option.style.display = "";
+    } else {
+       option.style.display = "none";
+    }
+      });
+  });
+ </script>
 </body>
 </html>
