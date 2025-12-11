@@ -66,6 +66,29 @@ def decrementCurrent(exam_id):
     exam.exam_current -= 1
     db.session.commit()
 
+def maxRegistrations(user_id):
+    numRegistrations = Registration.query.filter_by(user_id=user_id).all()
+    if (len(numRegistrations) >= 3):
+        return False
+    else:
+        return True
+    
+def duplicateExamType(user_id, exam_name):
+    user = User.query.filter_by(email=session["email"]).first()
+    registrations = Registration.query.filter_by(user_id = user.user_id).all()
+    exam_ids = [r.exam_id for r in registrations]
+    exams = Exam.query.filter(Exam.exam_id.in_(exam_ids)).all()
+
+    for exam in exams:
+        if (exam.exam_name == exam_name):
+            return True
+        
+    return False
+        
+
+
+
+
 
 ### ---------- Routes ---------- ###
 
@@ -376,6 +399,15 @@ def register_exam():
     
     if registration:
         return redirect(url_for("dashboard", error = "No Duplicate Registrations!"))
+    
+    elif not maxRegistrations(user.user_id):
+        return redirect(url_for("dashboard", error = "Exam Limit Reached - " \
+                                "Please Cancel an Exam Fisrt"))
+    elif duplicateExamType(user.user_id, exam.exam_name):
+        return redirect(url_for("dashboard", error = "You have already " \
+        "                                              registered for an" \
+        "                                              exam of this type"))
+
 
     else:
         new_registration = Registration()
